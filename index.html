@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Smart City Demo</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial; padding:20px; max-width:900px; margin:auto;}
+    header{display:flex;justify-content:space-between;align-items:center;}
+    .card{border:1px solid #ddd;padding:12px;border-radius:8px;margin:8px 0;}
+    #chat-log{height:200px;overflow:auto;border:1px solid #eee;padding:8px;background:#fafafa;}
+    input, button, textarea{padding:8px;margin:6px 0;width:100%;box-sizing:border-box;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Smart City — Demo UI</h1>
+    <small>Frontend (static) • Talks to FastAPI backend</small>
+  </header>
+
+  <section class="card">
+    <h3>Chat with Assistant (demo)</h3>
+    <div id="chat-log"></div>
+    <textarea id="chat-input" rows="2" placeholder="Ask about traffic, report a pothole..."></textarea>
+    <button id="send-btn">Send</button>
+  </section>
+
+  <section class="card">
+    <h3>Tickets</h3>
+    <input id="ticket-title" placeholder="Title" />
+    <textarea id="ticket-desc" placeholder="Description"></textarea>
+    <button id="create-ticket">Create Ticket</button>
+    <pre id="tickets-list"></pre>
+  </section>
+
+  <section class="card">
+    <h3>Image Analyze (CV demo)</h3>
+    <input type="file" id="imgfile" accept="image/*"/>
+    <button id="upload-img">Upload & Analyze</button>
+    <pre id="img-result"></pre>
+  </section>
+
+  <script>
+    const API_BASE = 'http://localhost:8000';
+    const chatLog = document.getElementById('chat-log');
+    document.getElementById('send-btn').onclick = async () => {
+      const message = document.getElementById('chat-input').value;
+      if(!message) return;
+      appendLog('You: ' + message);
+      const res = await fetch(API_BASE + '/api/v1/chat/query', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({message})
+      });
+      const data = await res.json();
+      appendLog('Assistant: ' + (data.reply || JSON.stringify(data)));
+    };
+    function appendLog(txt){ chatLog.innerText += txt + '\n'; chatLog.scrollTop = chatLog.scrollHeight; }
+
+    document.getElementById('create-ticket').onclick = async () => {
+      const title = document.getElementById('ticket-title').value || 'Untitled';
+      const desc = document.getElementById('ticket-desc').value || '';
+      const res = await fetch(API_BASE + '/api/v1/tickets', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title, description:desc})
+      });
+      const data = await res.json();
+      document.getElementById('tickets-list').innerText = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById('upload-img').onclick = async () => {
+      const f = document.getElementById('imgfile').files[0];
+      if(!f){ alert('choose an image'); return; }
+      const fd = new FormData(); fd.append('file', f);
+      const res = await fetch(API_BASE + '/api/v1/cv/analyze', {method:'POST', body: fd});
+      const data = await res.json();
+      document.getElementById('img-result').innerText = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>
