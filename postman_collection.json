@@ -1,0 +1,55 @@
+{
+  "info": {
+    "name": "Smart City Starter",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\\n  \\\"title\\\": \\\"Pothole near school\\\",\\n  \\\"description\\\": \\\"Big pothole on 5th street\\\"\\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/tickets",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "v1",
+            "tickets"
+          ]
+        }
+      }
+    }
+  ]
+}
